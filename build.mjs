@@ -72,7 +72,8 @@ function vcard(s, url, photo) {
     "VERSION:3.0",
     `N:${v(s.apellido)};${v(s.nombre)};;;`,
     `FN:${v(`${s.nombre} ${s.apellido}`)}`,
-    `ORG:${v(ORG)}`,
+    // Empresa "Lawal"; la bajada va como departamento.
+    "ORG:Lawal;Cooperativa de Software",
     s.rol && `TITLE:${v(s.rol)}`,
     s.telefono && `TEL;TYPE=CELL:${digits(s.telefono)}`,
     s.email && `EMAIL;TYPE=WORK:${s.email}`,
@@ -81,7 +82,6 @@ function vcard(s, url, photo) {
     s.github && `URL;TYPE=GitHub:${s.github}`,
     s.web && `URL;TYPE=Web:${s.web}`,
     "URL;TYPE=Lawal:https://lawal.coop",
-    s.ubicacion && `ADR;TYPE=WORK:;;;${v(s.ubicacion)};;;`,
     photo && `PHOTO;ENCODING=b;TYPE=${photo.type}:${photo.b64}`,
     `NOTE:${v(`${s.rol ? s.rol + " en " : ""}${ORG}. Tarjeta: ${url}`)}`,
     "END:VCARD",
