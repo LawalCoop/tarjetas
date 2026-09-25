@@ -1,0 +1,15 @@
+{
+  "slug": "nombre-en-minusculas-sin-tildes",
+  "nombre": "Nombre",
+  "apellido": "Apellido",
+  "rol": "Desarrolladora backend",
+  "bio": "Una o dos líneas sobre qué hacés en Lawal.",
+  "email": "nombre@lawal.coop",
+  "telefono": "+54 9 299 123 4567",
+  "whatsapp": "+54 9 299 123 4567",
+  "linkedin": "https://www.linkedin.com/in/usuario",
+  "github": "https://github.com/usuario",
+  "web": "",
+  "ubicacion": "Neuquén, Patagonia",
+  "foto": "fotos/nombre.jpg"
+}
