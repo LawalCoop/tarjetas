@@ -241,7 +241,7 @@ button { font: inherit; color: inherit; background: none; border: 0; cursor: poi
 @media (prefers-reduced-motion: no-preference) {
   .id { animation: rise 0.9s 0.5s cubic-bezier(0.2, 0.8, 0.2, 1) both; }
   .mark { animation: fade 0.8s 1s both; }
-  .save, .quick, .links, .bio { animation: fade 0.6s 1.15s both; }
+  .save, .quick, .reply, .links, .bio { animation: fade 0.6s 1.15s both; }
 }
 @keyframes rise { from { opacity: 0; transform: translateY(14px); } }
 @keyframes fade { from { opacity: 0; } }
