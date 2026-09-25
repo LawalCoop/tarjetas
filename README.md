@@ -16,9 +16,20 @@ El `slug` va en la URL: solo minúsculas, números y guiones, sin tildes.
 
 ## Usarla en un evento
 
-- Abrí tu tarjeta en el celu y agregala a la pantalla de inicio (en Safari: Compartir → Agregar a inicio; en Chrome: menú → Instalar app). Así abre como una app y **funciona sin señal**.
-- Tocá la tarjeta o «Mostrar QR»: se da vuelta, muestra el código y la pantalla queda encendida mientras te escanean.
-- Para imprimir el QR (stickers, credenciales, slides) usá `https://lawalcoop.github.io/tarjetas/<slug>/qr.svg`.
+Cada socio tiene dos vistas:
+
+| Vista | URL | Para qué |
+|---|---|---|
+| Tarjeta | `/tarjetas/<slug>/` | La que ve quien te escanea: guardar contacto, WhatsApp, links. |
+| Presentar | `/tarjetas/<slug>/yo/` | La tuya: QR a pantalla completa con las curvas de nivel abriéndose desde el código. |
+
+Para tenerla a mano:
+
+1. Abrí `/tarjetas/<slug>/yo/` en tu celu.
+2. Agregala a la pantalla de inicio (en Safari: Compartir → Agregar a inicio; en Chrome: menú → Instalar app). Queda un ícono «QR <nombre>» que abre directo a pantalla completa y **funciona sin señal**.
+3. En el evento, la abrís y la mostrás. La pantalla no se apaga mientras está abierta.
+
+Para imprimir el QR (stickers, credenciales, slides) usá `/tarjetas/<slug>/qr.svg`.
 
 ## Qué puede hacer quien escanea
 
@@ -34,8 +45,10 @@ SITE_URL=http://localhost:8000 node build.mjs    # URLs y QR apuntando a local
 cd dist && python3 -m http.server 8000
 ```
 
-- `build.mjs` genera por socio la página, el `.vcf`, el `qr.svg` y el manifest de la PWA.
-- `assets/card.js` tiene el relieve (ruido Perlin con semilla y curvas de nivel con marching squares), el giroscopio y las acciones.
+- `build.mjs` genera por socio la tarjeta, la vista `yo/` (con su manifest de PWA), el `.vcf` y el `qr.svg`.
+- `assets/terrain.js` es el motor del relieve: ruido Perlin con semilla y curvas de nivel con marching squares.
+- `assets/card.js` anima la tarjeta pública (giroscopio, giro para ver el QR, compartir).
+- `assets/yo.js` anima la vista de presentar: el QR es la cumbre y las curvas se abren desde él.
 - `assets/card.css` usa la paleta de lawal.coop: pizarra `#202A33`, ámbar `#FFBE69`, lenga `#468D81` y ciruela `#91486F`.
 - `sw.js` es el service worker que cachea todo para que ande offline.
 

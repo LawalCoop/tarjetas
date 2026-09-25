@@ -28,8 +28,12 @@ const ICON = {
   github: svg('<path d="M15 22v-4a4.8 4.8 0 0 0-1-3.5c3 0 6-2 6-5.5.08-1.25-.27-2.48-1-3.5.28-1.15.28-2.35 0-3.5 0 0-1 0-3 1.5-2.64-.5-5.36-.5-8 0C6 2 5 2 5 2c-.3 1.15-.3 2.35 0 3.5A5.4 5.4 0 0 0 4 9c0 3.5 3 5.5 6 5.5-.39.49-.68 1.05-.85 1.65-.17.6-.22 1.23-.15 1.85v4"/><path d="M9 18c-4.51 2-5-2-7-2"/>'),
   globe: svg('<circle cx="12" cy="12" r="10"/><path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20M2 12h20"/>'),
   share: svg('<path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"/><path d="m16 6-4-4-4 4M12 2v13"/>'),
+  expand: svg('<path d="M8 3H5a2 2 0 0 0-2 2v3M21 8V5a2 2 0 0 0-2-2h-3M3 16v3a2 2 0 0 0 2 2h3M16 21h3a2 2 0 0 0 2-2v-3"/>'),
+  card: svg('<rect x="2" y="5" width="20" height="14" rx="2"/><path d="M6 15h6M6 11h3"/>'),
   qr: svg('<rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><path d="M14 14h3v3h-3zM20 14v.01M14 20h.01M17 20h4v-3"/>'),
 };
+
+const LOGO = fs.readFileSync(path.join(ROOT, "assets/logo.svg"), "utf8").replace('fill="#FFFFFF"', 'fill="currentColor"');
 
 function qrSvg(text) {
   const qr = qrcode(0, "M");
@@ -98,7 +102,6 @@ function page(s, url, qr, hasPhoto) {
 <meta property="og:image" content="${SITE}/assets/og.png">
 <meta name="twitter:card" content="summary_large_image">
 <link rel="canonical" href="${url}">
-<link rel="manifest" href="manifest.webmanifest">
 <link rel="icon" href="../assets/favicon.svg" type="image/svg+xml">
 <link rel="apple-touch-icon" href="../assets/icon-192.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -108,7 +111,7 @@ function page(s, url, qr, hasPhoto) {
 </head>
 <body>
 <header class="top">
-  <a class="brand" href="https://lawal.coop" aria-label="Lawal, ir al sitio">${fs.readFileSync(path.join(ROOT, "assets/logo.svg"), "utf8").replace('fill="#FFFFFF"', 'fill="currentColor"')}</a>
+  <a class="brand" href="https://lawal.coop" aria-label="Lawal, ir al sitio">${LOGO}</a>
   ${s.ubicacion ? `<span class="where">${esc(s.ubicacion)}</span>` : ""}
 </header>
 
@@ -145,7 +148,6 @@ function page(s, url, qr, hasPhoto) {
   <ul class="links">
     ${links.map((l) => `<li><a href="${esc(l.href)}" target="_blank" rel="noopener">${l.icon}<span class="label">${l.label}</span><span class="detail">${esc(l.detail)}</span></a></li>`).join("\n    ")}
     <li><button type="button" id="share">${ICON.share}<span class="label">Compartir tarjeta</span><span class="detail">Pasásela a alguien más</span></button></li>
-    <li><button type="button" id="showqr">${ICON.qr}<span class="label">Mostrar QR</span><span class="detail">Para que te escaneen</span></button></li>
   </ul>
 </main>
 
@@ -155,7 +157,60 @@ function page(s, url, qr, hasPhoto) {
 
 <div class="toast" id="toast" role="status" aria-live="polite"></div>
 <script id="socio" type="application/json">${JSON.stringify({ slug: s.slug, nombre: s.nombre, url, title: `${full} · Lawal` })}</script>
+<script src="../assets/terrain.js?v=${VERSION}" defer></script>
 <script src="../assets/card.js?v=${VERSION}" defer></script>
+</body>
+</html>
+`;
+}
+
+// Vista para presentar en un evento: QR a pantalla completa.
+function yoPage(s, url, qr) {
+  const full = `${s.nombre} ${s.apellido}`;
+  return `<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>${esc(s.nombre)} · Escaneame</title>
+<meta name="robots" content="noindex">
+<meta name="theme-color" content="#0f1319">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="${esc(s.nombre)}">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="../../assets/favicon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="../../assets/icon-192.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Saira+Stencil+One&family=Saira:wdth,wght@75..125,300..700&display=swap">
+<link rel="stylesheet" href="../../assets/card.css?v=${VERSION}">
+<link rel="stylesheet" href="../../assets/yo.css?v=${VERSION}">
+</head>
+<body class="yo">
+<canvas id="terrain" aria-hidden="true"></canvas>
+<header class="yo-top">
+  <span class="brand">${LOGO}</span>
+  <button type="button" id="fullscreen" class="yo-icon" aria-label="Pantalla completa" hidden>${ICON.expand}</button>
+</header>
+<main class="yo-main">
+  <h1 class="yo-name"><span>${esc(s.nombre)}</span><span>${esc(s.apellido)}</span></h1>
+  <p class="yo-role">${s.rol ? `${esc(s.rol)} en ` : ""}Lawal, cooperativa de software</p>
+  <div class="yo-target">
+    <span class="corner tl"></span><span class="corner tr"></span><span class="corner bl"></span><span class="corner br"></span>
+    <div class="plate" id="plate">${qr}</div>
+  </div>
+  <p class="yo-cta">Escaneá para guardar mi contacto</p>
+</main>
+<nav class="yo-actions" aria-label="Opciones">
+  <button type="button" id="share">${ICON.share}<span>Compartir link</span></button>
+  <a href="../">${ICON.card}<span>Ver mi tarjeta</span></a>
+</nav>
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+<script id="socio" type="application/json">${JSON.stringify({ slug: s.slug, nombre: s.nombre, url, title: `${full} · Lawal` })}</script>
+<script src="../../assets/terrain.js?v=${VERSION}" defer></script>
+<script src="../../assets/yo.js?v=${VERSION}" defer></script>
 </body>
 </html>
 `;
@@ -176,7 +231,7 @@ function indexPage(socios) {
 <link rel="stylesheet" href="assets/card.css?v=${VERSION}">
 </head>
 <body class="index">
-<header class="top"><a class="brand" href="https://lawal.coop" aria-label="Lawal, ir al sitio">${fs.readFileSync(path.join(ROOT, "assets/logo.svg"), "utf8").replace('fill="#FFFFFF"', 'fill="currentColor"')}</a></header>
+<header class="top"><a class="brand" href="https://lawal.coop" aria-label="Lawal, ir al sitio">${LOGO}</a></header>
 <main>
   <h1>Las personas de Lawal</h1>
   <ul class="links">
@@ -219,23 +274,26 @@ for (const s of socios) {
   fs.writeFileSync(path.join(dir, "index.html"), page(s, url, qr, ext));
   fs.writeFileSync(path.join(dir, `${s.slug}.vcf`), vcard(s, url, photo));
   fs.writeFileSync(path.join(dir, "qr.svg"), qr);
+  fs.mkdirSync(path.join(dir, "yo"), { recursive: true });
+  fs.writeFileSync(path.join(dir, "yo", "index.html"), yoPage(s, url, qr));
   fs.writeFileSync(
-    path.join(dir, "manifest.webmanifest"),
+    path.join(dir, "yo", "manifest.webmanifest"),
     JSON.stringify({
       name: `${s.nombre} ${s.apellido} · Lawal`,
-      short_name: s.nombre,
+      short_name: `QR ${s.nombre}`,
       start_url: "./",
       scope: "./",
-      display: "standalone",
-      background_color: "#202A33",
-      theme_color: "#202A33",
+      display: "fullscreen",
+      orientation: "portrait",
+      background_color: "#0f1319",
+      theme_color: "#0f1319",
       icons: [
-        { src: "../assets/icon-192.png", sizes: "192x192", type: "image/png" },
-        { src: "../assets/icon-512.png", sizes: "512x512", type: "image/png", purpose: "any maskable" },
+        { src: "../../assets/icon-192.png", sizes: "192x192", type: "image/png" },
+        { src: "../../assets/icon-512.png", sizes: "512x512", type: "image/png", purpose: "any maskable" },
       ],
     }, null, 2)
   );
-  console.log(`✓ ${s.slug.padEnd(16)} ${url}`);
+  console.log(`✓ ${s.slug.padEnd(16)} ${url}   (para mostrar: ${url}yo/)`);
 }
 
 fs.writeFileSync(path.join(DIST, "index.html"), indexPage(socios));
