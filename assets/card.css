@@ -452,7 +452,13 @@ button { font: inherit; color: inherit; background: none; border: 0; cursor: poi
   font: inherit;
   font-size: 18px;
 }
-.sheet input:focus { outline: 2px solid var(--ambar); outline-offset: 1px; border-color: transparent; }
+/* El foco se dibuja hacia adentro: la hoja scrollea y recortaría un borde externo. */
+.sheet input:focus,
+.sheet input:focus-visible {
+  outline: none;
+  border-color: var(--ambar);
+  box-shadow: inset 0 0 0 1px var(--ambar);
+}
 .sheet-row { display: grid; grid-template-columns: 1fr 1.4fr; gap: 10px; margin-top: 14px; }
 .sheet-row button { min-height: 50px; border-radius: 12px; font-weight: 600; font-size: 16px; }
 .sheet .ghost { background: rgb(255 255 255 / 0.06); border: 1px solid var(--linea); }
