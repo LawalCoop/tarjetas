@@ -115,7 +115,7 @@ function page(s, url, qr, hasPhoto) {
 <main>
   <div class="stage">
     <div class="tilt" id="tilt">
-      <button class="card" id="card" type="button" aria-pressed="false" aria-label="Dar vuelta la tarjeta para ver el código QR">
+      <div class="card" id="card" role="button" tabindex="0" aria-pressed="false" aria-label="Dar vuelta la tarjeta para ver el código QR">
         <span class="face front">
           <canvas id="terrain" aria-hidden="true"></canvas>
           <span class="sheen" aria-hidden="true"></span>
@@ -130,7 +130,7 @@ function page(s, url, qr, hasPhoto) {
           <span class="qr">${qr}</span>
           <span class="scan">Escaneá para guardar el contacto de ${esc(s.nombre)}</span>
         </span>
-      </button>
+      </div>
     </div>
   </div>
 

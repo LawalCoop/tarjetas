@@ -13,9 +13,23 @@ self.addEventListener("activate", (e) => {
 
 self.addEventListener("fetch", (e) => {
   if (e.request.method !== "GET") return;
+  // Páginas: primero red (siempre la última versión), caché si no hay señal.
+  if (e.request.mode === "navigate") {
+    e.respondWith(
+      caches.open(CACHE).then((cache) =>
+        fetch(e.request)
+          .then((res) => {
+            if (res.ok) cache.put(e.request, res.clone());
+            return res;
+          })
+          .catch(() => cache.match(e.request, { ignoreSearch: true }))
+      )
+    );
+    return;
+  }
   e.respondWith(
     caches.open(CACHE).then(async (cache) => {
-      const hit = await cache.match(e.request, { ignoreSearch: e.request.mode === "navigate" });
+      const hit = await cache.match(e.request);
       const net = fetch(e.request)
         .then((res) => {
           if (res.ok || res.type === "opaque") cache.put(e.request, res.clone());

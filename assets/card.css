@@ -52,32 +52,27 @@ button { font: inherit; color: inherit; background: none; border: 0; cursor: poi
 }
 
 /* ---------- tarjeta ---------- */
-.stage { perspective: 1100px; }
-
-.tilt {
-  transform-style: preserve-3d;
-  will-change: transform;
-}
+.tilt { will-change: transform; }
 
 .card {
   position: relative;
   display: block;
   width: 100%;
   aspect-ratio: 85 / 55;
-  transform-style: preserve-3d;
-  transition: transform 0.7s cubic-bezier(0.2, 0.8, 0.2, 1);
   border-radius: 18px;
   text-align: left;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
 }
-.card[aria-pressed="true"] { transform: rotateY(180deg); }
+/* El giro lo anima card.js; acá solo se elige qué cara se ve. */
+.card[aria-pressed="true"] .front,
+.card:not([aria-pressed="true"]) .back { visibility: hidden; }
 
 .face {
   position: absolute;
   inset: 0;
   border-radius: 18px;
   overflow: hidden;
-  backface-visibility: hidden;
-  -webkit-backface-visibility: hidden;
   box-shadow:
     0 1px 0 rgb(255 255 255 / 0.08) inset,
     0 30px 60px -20px rgb(0 0 0 / 0.6),
@@ -170,7 +165,6 @@ button { font: inherit; color: inherit; background: none; border: 0; cursor: poi
 }
 
 .back {
-  transform: rotateY(180deg);
   background: var(--tiza);
   color: var(--pizarra);
   display: flex;

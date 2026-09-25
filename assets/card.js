@@ -194,7 +194,7 @@
     last = now;
     cur.x += (target.x - cur.x) * 0.12;
     cur.y += (target.y - cur.y) * 0.12;
-    tilt.style.transform = `rotateY(${cur.x * 9}deg) rotateX(${-cur.y * 7}deg)`;
+    tilt.style.transform = `perspective(1100px) rotateY(${cur.x * 9}deg) rotateX(${-cur.y * 7}deg)`;
     card.style.setProperty("--mx", `${50 + cur.x * 45}%`);
     card.style.setProperty("--my", `${35 + cur.y * 45}%`);
     card.style.setProperty("--sx", `${cur.x * 25}%`);
@@ -226,8 +226,19 @@
 
   let wakeLock = null;
   const qrBtnLabel = document.querySelector("#showqr .label");
+  // Giro en dos mitades: hasta quedar de canto, cambio de cara, y vuelta.
+  // No usa preserve-3d, así la cara de atrás nunca sale espejada.
+  let flipping = false;
   async function setFlipped(on) {
+    if (flipping) return;
+    const turn = (from, to, easing) =>
+      card.animate([{ transform: `perspective(900px) rotateY(${from}deg)` }, { transform: `perspective(900px) rotateY(${to}deg)` }], { duration: 230, easing }).finished;
+    flipping = true;
+    const dir = on ? 1 : -1;
+    if (!reduce) await turn(0, 90 * dir, "cubic-bezier(.5,0,.9,.5)");
     card.setAttribute("aria-pressed", String(on));
+    if (!reduce) await turn(-90 * dir, 0, "cubic-bezier(.1,.5,.4,1)");
+    flipping = false;
     card.setAttribute("aria-label", on ? "Volver al frente de la tarjeta" : "Dar vuelta la tarjeta para ver el código QR");
     qrBtnLabel.textContent = on ? "Ocultar QR" : "Mostrar QR";
     // Pantalla encendida mientras te escanean
@@ -238,9 +249,13 @@
   }
 
   let askedGyro = false;
-  card.addEventListener("click", () => {
+  const toggle = () => {
     if (!askedGyro && !reduce) { askedGyro = true; enableGyro(); }
     setFlipped(card.getAttribute("aria-pressed") !== "true");
+  };
+  card.addEventListener("click", toggle);
+  card.addEventListener("keydown", (e) => {
+    if (e.key === "Enter" || e.key === " ") { e.preventDefault(); toggle(); }
   });
 
   document.getElementById("showqr").addEventListener("click", () => {
