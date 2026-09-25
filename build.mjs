@@ -35,6 +35,12 @@ const ICON = {
 
 const LOGO = fs.readFileSync(path.join(ROOT, "assets/logo.svg"), "utf8").replace('fill="#FFFFFF"', 'fill="currentColor"');
 
+// Logo + bajada, como firma de la coope en las cabeceras.
+const LOCKUP = `<span class="lockup">${LOGO}<span class="tagline">Cooperativa de Software</span></span>`;
+
+// "Asociado / Dev Sr" -> la barra en ámbar.
+const rolHtml = (rol) => esc(rol).replace(/\s*\/\s*/g, '<span class="sep">/</span>');
+
 function qrSvg(text) {
   const qr = qrcode(0, "M");
   qr.addData(text, "Byte");
@@ -111,8 +117,7 @@ function page(s, url, qr, hasPhoto) {
 </head>
 <body>
 <header class="top">
-  <a class="brand" href="https://lawal.coop" aria-label="Lawal, ir al sitio">${LOGO}</a>
-  ${s.ubicacion ? `<span class="where">${esc(s.ubicacion)}</span>` : ""}
+  <a class="brand" href="https://lawal.coop" aria-label="Lawal, Cooperativa de Software. Ir al sitio">${LOCKUP}</a>
 </header>
 
 <main>
@@ -125,7 +130,7 @@ function page(s, url, qr, hasPhoto) {
           ${hasPhoto ? `<img class="avatar" src="foto${hasPhoto}" alt="" width="56" height="56">` : ""}
           <span class="id">
             <span class="name"><span>${esc(s.nombre)}</span><span>${esc(s.apellido)}</span></span>
-            <span class="role">${s.rol ? `${esc(s.rol)}<br>` : ""}Lawal, cooperativa de software</span>
+            <span class="role">${s.rol ? `<span class="rol">${rolHtml(s.rol)}</span>` : ""}<span class="org">Lawal, Cooperativa de Software</span></span>
           </span>
           <img class="mark" src="../assets/iso.svg" alt="" aria-hidden="true">
         </span>
@@ -191,12 +196,12 @@ function yoPage(s, url, qr) {
 <body class="yo">
 <canvas id="terrain" aria-hidden="true"></canvas>
 <header class="yo-top">
-  <span class="brand">${LOGO}</span>
+  <span class="brand">${LOCKUP}</span>
   <button type="button" id="fullscreen" class="yo-icon" aria-label="Pantalla completa" hidden>${ICON.expand}</button>
 </header>
 <main class="yo-main">
   <h1 class="yo-name"><span>${esc(s.nombre)}</span><span>${esc(s.apellido)}</span></h1>
-  <p class="yo-role">${s.rol ? `${esc(s.rol)} en ` : ""}Lawal, cooperativa de software</p>
+  ${s.rol ? `<p class="yo-role">${rolHtml(s.rol)}</p>` : ""}
   <div class="yo-target">
     <span class="corner tl"></span><span class="corner tr"></span><span class="corner bl"></span><span class="corner br"></span>
     <div class="plate" id="plate">${qr}</div>
@@ -231,7 +236,7 @@ function indexPage(socios) {
 <link rel="stylesheet" href="assets/card.css?v=${VERSION}">
 </head>
 <body class="index">
-<header class="top"><a class="brand" href="https://lawal.coop" aria-label="Lawal, ir al sitio">${LOGO}</a></header>
+<header class="top"><a class="brand" href="https://lawal.coop" aria-label="Lawal, Cooperativa de Software. Ir al sitio">${LOCKUP}</a></header>
 <main>
   <h1>Las personas de Lawal</h1>
   <ul class="links">

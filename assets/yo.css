@@ -30,7 +30,7 @@ body.yo {
   justify-content: space-between;
   min-height: 44px;
 }
-.yo-top .brand svg { display: block; height: 16px; width: auto; color: var(--tiza); opacity: 0.9; }
+.yo-top .lockup svg { height: 17px; }
 
 .yo-icon {
   display: grid;
@@ -68,10 +68,11 @@ body.yo {
 .yo-name span:last-child { color: var(--ambar); }
 
 .yo-role {
-  margin-top: 10px;
-  font-size: 14px;
-  color: var(--niebla);
-  font-variation-settings: "wdth" 88;
+  margin-top: 14px;
+  font-size: clamp(17px, 4.8vw, 22px);
+  font-weight: 550;
+  color: var(--tiza);
+  font-variation-settings: "wdth" 90;
 }
 
 /* El QR y su visor */

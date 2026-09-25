@@ -43,12 +43,21 @@ button { font: inherit; color: inherit; background: none; border: 0; cursor: poi
   justify-content: space-between;
   padding-block: 22px 18px;
 }
-.brand svg { display: block; height: 18px; width: auto; color: var(--tiza); }
-.where {
-  font-size: 13px;
-  color: var(--niebla);
-  font-variation-settings: "wdth" 85;
-  letter-spacing: 0.02em;
+.lockup {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  color: var(--tiza);
+}
+.lockup svg { display: block; height: 18px; width: auto; flex: none; }
+.tagline {
+  padding-left: 12px;
+  border-left: 1px solid rgb(255 255 255 / 0.28);
+  font-size: 15px;
+  line-height: 1.1;
+  font-weight: 500;
+  font-variation-settings: "wdth" 90;
+  white-space: nowrap;
 }
 
 /* ---------- tarjeta ---------- */
@@ -136,10 +145,20 @@ button { font: inherit; color: inherit; background: none; border: 0; cursor: poi
 .name span:last-child { color: var(--ambar); }
 
 .role {
-  font-size: 13px;
-  line-height: 1.35;
-  color: var(--niebla);
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
   font-variation-settings: "wdth" 88;
+}
+.rol {
+  font-size: 16px;
+  font-weight: 550;
+  color: var(--tiza);
+}
+.sep { color: var(--ambar); margin: 0 0.35em; }
+.org {
+  font-size: 13px;
+  color: var(--niebla);
 }
 
 .mark {
