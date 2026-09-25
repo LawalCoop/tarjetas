@@ -8,8 +8,8 @@ body.yo {
   background:
     radial-gradient(70% 55% at 50% 52%, #1c2731 0%, var(--noche) 75%);
   padding:
-    max(14px, env(safe-area-inset-top)) 16px
-    max(14px, env(safe-area-inset-bottom));
+    max(14px, env(safe-area-inset-top)) max(16px, env(safe-area-inset-right))
+    max(14px, env(safe-area-inset-bottom)) max(16px, env(safe-area-inset-left));
   overscroll-behavior: none;
   touch-action: manipulation;
 }
@@ -177,6 +177,37 @@ body.yo {
   }
   .yo-name { grid-area: name; align-self: end; font-size: clamp(44px, 7vw, 96px); }
   .yo-role { grid-area: role; max-width: 32ch; }
-  .yo-cta { grid-area: cta; margin-top: 28px; max-width: 18ch; }
-  .yo-target { grid-area: target; --size: min(52dvh, 38vw, 440px); margin: 0; }
+  .yo-name { font-size: clamp(38px, min(7vw, 14dvh), 96px); }
+  .yo-role { margin-top: 10px; }
+  .yo-cta { grid-area: cta; margin-top: clamp(14px, 5dvh, 32px); }
+  .yo-target { grid-area: target; --size: min(62dvh, 40vw, 460px); margin: 0; }
+
+  /* Las acciones suben a la barra: toda la altura queda para el QR. */
+  .yo-actions {
+    position: absolute;
+    top: max(14px, env(safe-area-inset-top));
+    right: calc(max(16px, env(safe-area-inset-right)) + 54px);
+    display: flex;
+    width: auto;
+    margin: 0;
+  }
+  body.yo:has(#fullscreen[hidden]) .yo-actions { right: max(16px, env(safe-area-inset-right)); }
+  .yo-actions a, .yo-actions button {
+    min-height: 44px;
+    padding: 0 16px;
+    border-radius: 22px;
+  }
+}
+
+/* Celu acostado: solo íconos, para que no pisen la firma de la coope. */
+@media (orientation: landscape) and (min-width: 640px) and (max-width: 899px) {
+  .yo-actions a, .yo-actions button { width: 44px; padding: 0; border-radius: 50%; }
+  .yo-actions span {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
 }

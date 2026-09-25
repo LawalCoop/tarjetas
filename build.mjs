@@ -289,7 +289,7 @@ for (const s of socios) {
       start_url: "./",
       scope: "./",
       display: "fullscreen",
-      orientation: "portrait",
+      orientation: "any",
       background_color: "#0f1319",
       theme_color: "#0f1319",
       icons: [
