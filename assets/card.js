@@ -302,7 +302,11 @@
     const vesc = (x) => x.replace(/\\/g, "\\\\").replace(/([,;])/g, "\\$1");
     const vcf = socio.vcf
       .replace(/\r\n[ \t]/g, "") // despliega líneas largas
-      .replace(/^NOTE:(.*)$/m, (_, rest) => `NOTE:${vesc(`Nos conocimos en ${evento} el ${fecha}.`)}\\n${rest}`);
+      .replace(/^NOTE:(.*)$/m, (_, rest) => `NOTE:${vesc(`Nos conocimos en ${evento} el ${fecha}.`)}\\n${rest}`)
+      // "Jerónimo Clinaz - Ekoparty": va en el apellido porque iOS y Android
+      // arman el nombre visible desde N, no desde FN.
+      .replace(/^N:([^;\r\n]*);/m, (_, ap) => `N:${ap} - ${vesc(evento)};`)
+      .replace(/^FN:(.*)$/m, (_, fn) => `FN:${fn} - ${vesc(evento)}`);
     const url = URL.createObjectURL(new Blob([vcf], { type: "text/vcard;charset=utf-8" }));
     const ios = /iP(hone|ad|od)/.test(navigator.userAgent) || (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1);
     if (ios) {

@@ -37,7 +37,7 @@ Antes de un evento, en la vista `/yo/` tocá **Evento** y escribí el nombre (po
 
 - ve «Nos conocimos en Nerdearla 2026» arriba de tu tarjeta,
 - recibe un WhatsApp ya armado con «Nos conocimos en Nerdearla 2026»,
-- al guardar tu contacto le queda en la nota: «Nos conocimos en Nerdearla 2026 el 25 de septiembre de 2026».
+- al guardar tu contacto le queda agendado como «Jerónimo Clinaz - Nerdearla 2026», con la nota «Nos conocimos en Nerdearla 2026 el 25 de septiembre de 2026».
 
 El evento queda guardado en tu celu y se borra solo a los 3 días.
 
