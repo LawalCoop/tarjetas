@@ -304,6 +304,19 @@ button { font: inherit; color: inherit; background: none; border: 0; cursor: poi
   line-height: 1.5;
   color: var(--niebla);
 }
+.foot p { max-width: 60ch; }
+.libre {
+  margin-top: 14px;
+  padding-top: 14px;
+  border-top: 1px solid var(--linea);
+}
+.libre a {
+  color: var(--tiza);
+  text-decoration: underline;
+  text-decoration-color: var(--lenga);
+  text-underline-offset: 3px;
+}
+@media (hover: hover) { .libre a:hover { color: var(--ambar); } }
 
 .toast {
   position: fixed;

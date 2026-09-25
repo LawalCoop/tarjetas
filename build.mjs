@@ -38,6 +38,12 @@ const LOGO = fs.readFileSync(path.join(ROOT, "assets/logo.svg"), "utf8").replace
 // Logo + bajada, como firma de la coope en las cabeceras.
 const LOCKUP = `<span class="lockup">${LOGO}<span class="tagline">Cooperativa de Software</span></span>`;
 
+const REPO = "https://github.com/LawalCoop/tarjetas";
+const FOOT = `
+  <p>Lawal es una cooperativa de trabajo de base tecnológica. Hacemos inteligencia artificial y sistemas de alta concurrencia desde la Patagonia, con autogestión y conocimiento libre.</p>
+  <p class="libre">Esta tarjeta es software libre (AGPL-3.0). <a href="${REPO}" target="_blank" rel="noopener">Mirá el código en GitHub</a> y armá la tuya.</p>
+`;
+
 // "Asociado / Dev Sr" -> la barra en ámbar.
 const rolHtml = (rol) => esc(rol).replace(/\s*\/\s*/g, '<span class="sep">/</span>');
 
@@ -156,9 +162,7 @@ function page(s, url, qr, hasPhoto) {
   </ul>
 </main>
 
-<footer class="foot">
-  <p>Lawal es una cooperativa de trabajo de software: inteligencia artificial y sistemas de alta concurrencia desde la Patagonia.</p>
-</footer>
+<footer class="foot">${FOOT}</footer>
 
 <div class="toast" id="toast" role="status" aria-live="polite"></div>
 <script id="socio" type="application/json">${JSON.stringify({ slug: s.slug, nombre: s.nombre, url, title: `${full} · Lawal` })}</script>
@@ -243,6 +247,7 @@ function indexPage(socios) {
     ${socios.map((s) => `<li><a href="${esc(s.slug)}/"><span class="label">${esc(s.nombre)} ${esc(s.apellido)}</span><span class="detail">${esc(s.rol || "Socio")}</span></a></li>`).join("\n    ")}
   </ul>
 </main>
+<footer class="foot">${FOOT}</footer>
 </body>
 </html>
 `;

@@ -53,3 +53,7 @@ cd dist && python3 -m http.server 8000
 - `sw.js` es el service worker que cachea todo para que ande offline.
 
 Para usar un dominio propio (por ejemplo `tarjetas.lawal.coop`), configurá el dominio en *Settings → Pages* y definí la variable de repo `SITE_URL` con la URL nueva, así los QR apuntan ahí.
+
+## Licencia
+
+Software libre bajo [AGPL-3.0](LICENSE): podés usarlo, estudiarlo, modificarlo y compartirlo, siempre que tus versiones sigan siendo libres. Incluye [qrcode-generator](https://github.com/kazuhikoarase/qrcode-generator) de Kazuhiko Arase (MIT).
