@@ -41,6 +41,11 @@ Antes de un evento, en la vista `/yo/` tocá **Evento** y escribí el nombre (po
 
 El evento queda guardado en tu celu y se borra solo a los 3 días.
 
+### Guardar a la gente que conocés
+
+- **Dejame tu contacto** (en la tarjeta pública): quien te escanea pone su nombre, empresa y email, y se abre WhatsApp con un mensaje ya armado hacia vos («Hola Jerónimo! Soy Ana Pérez (Globant), nos conocimos en Ekoparty…»). Su número te llega con el mensaje.
+- **Anotar** (en `/yo/`): cargás nombre, teléfono o email y una nota, y va directo a tus contactos como «Ana Pérez - Ekoparty», con la nota y la fecha. Además queda en una lista en tu celu: al final del evento tocá **Descargar todos** y te llevás un solo archivo con todos los contactos.
+
 ### Easter eggs
 
 - **Sismo patagónico:** mantené apretada la tarjeta (o sacudí el celu) y las curvas de nivel tiemblan. En iPhone, sacudir funciona después de tocar la tarjeta una vez y aceptar el permiso de movimiento; mantener apretado anda siempre.
@@ -65,6 +70,7 @@ cd dist && python3 -m http.server 8000
 - `assets/card.js` anima la tarjeta pública (giroscopio, giro para ver el QR, compartir).
 - `assets/yo.js` anima la vista de presentar: el QR es la cumbre y las curvas se abren desde él.
 - `assets/card.css` usa la paleta de lawal.coop: pizarra `#202A33`, ámbar `#FFBE69`, lenga `#468D81` y ciruela `#91486F`.
+- `assets/vcard.js` arma y guarda contactos desde el navegador (anotar, lista, contacto con evento).
 - `sw.js` es el service worker que cachea todo para que ande offline.
 
 Para usar un dominio propio (por ejemplo `tarjetas.lawal.coop`), configurá el dominio en *Settings → Pages* y definí la variable de repo `SITE_URL` con la URL nueva, así los QR apuntan ahí.

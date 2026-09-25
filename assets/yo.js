@@ -217,6 +217,80 @@
   });
   dlg.addEventListener("click", (e) => { if (e.target === dlg) dlg.close(); });
 
+  // ---------- anotar contactos que conocés ----------
+  // Cada uno va directo a la agenda y además queda en una lista en este celu,
+  // para bajarlos todos juntos al final del evento.
+  const LKEY = `lawal-anotados-${socio.slug}`;
+  const ndlg = document.getElementById("notedlg");
+  const nform = document.getElementById("noteform");
+  const nhint = document.getElementById("notehint");
+  const lista = document.getElementById("lista");
+  const listaN = document.getElementById("lista-n");
+  const clearBtn = document.getElementById("lista-clear");
+
+  const readLista = () => { try { return JSON.parse(localStorage.getItem(LKEY) || "[]"); } catch { return []; } };
+  const writeLista = (l) => { try { localStorage.setItem(LKEY, JSON.stringify(l)); } catch {} };
+
+  function renderLista() {
+    const l = readLista();
+    lista.hidden = l.length === 0;
+    listaN.textContent = l.length === 1 ? "1 anotado en la lista" : `${l.length} anotados en la lista`;
+    clearBtn.textContent = "Vaciar";
+    delete clearBtn.dataset.armed;
+  }
+
+  document.getElementById("notebtn").addEventListener("click", () => {
+    const ev = readEvento();
+    nhint.textContent = ev ? `Va directo a tus contactos como «Nombre - ${ev}».` : "Va directo a tus contactos.";
+    nform.reset();
+    renderLista();
+    ndlg.showModal();
+    setTimeout(() => nform.elements.nombre.focus(), 50);
+  });
+  ndlg.addEventListener("click", (e) => { if (e.target === ndlg) ndlg.close(); });
+
+  nform.addEventListener("submit", (e) => {
+    if (e.submitter?.value !== "ok") return;
+    e.preventDefault();
+    const f = nform.elements;
+    // teléfono o email: con uno alcanza
+    f.tel.setCustomValidity(f.tel.value.trim() || f.email.value.trim() ? "" : "Poné un teléfono o un email.");
+    if (!nform.reportValidity()) return;
+    const c = {
+      nombre: f.nombre.value.trim().slice(0, 80),
+      tel: f.tel.value.trim().slice(0, 30),
+      email: f.email.value.trim().slice(0, 80),
+      nota: f.nota.value.trim().slice(0, 200),
+      evento: readEvento(),
+      t: Date.now(),
+    };
+    writeLista([...readLista(), c]);
+    ndlg.close();
+    say(`${c.nombre} anotado`);
+    LawalVCard.save(LawalVCard.build(c), `${LawalVCard.slug(c.nombre)}.vcf`);
+  });
+  nform.elements.tel.addEventListener("input", () => nform.elements.tel.setCustomValidity(""));
+  nform.elements.email.addEventListener("input", () => nform.elements.tel.setCustomValidity(""));
+
+  document.getElementById("lista-dl").addEventListener("click", () => {
+    const l = readLista();
+    if (!l.length) return;
+    const ev = readEvento() || l[l.length - 1].evento;
+    LawalVCard.save(l.map(LawalVCard.build).join(""), `contactos-${LawalVCard.slug(ev || "lawal")}.vcf`);
+  });
+  // Vaciar pide un segundo toque, sin carteles del navegador.
+  clearBtn.addEventListener("click", () => {
+    if (!clearBtn.dataset.armed) {
+      clearBtn.dataset.armed = "1";
+      clearBtn.textContent = "¿Seguro? Tocá de nuevo";
+      setTimeout(renderLista, 3000);
+      return;
+    }
+    writeLista([]);
+    renderLista();
+    say("Lista vaciada");
+  });
+
   if ("serviceWorker" in navigator && location.protocol === "https:") {
     navigator.serviceWorker.register("../../sw.js").catch(() => {});
   }

@@ -30,6 +30,7 @@ const ICON = {
   share: svg('<path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"/><path d="m16 6-4-4-4 4M12 2v13"/>'),
   expand: svg('<path d="M8 3H5a2 2 0 0 0-2 2v3M21 8V5a2 2 0 0 0-2-2h-3M3 16v3a2 2 0 0 0 2 2h3M16 21h3a2 2 0 0 0 2-2v-3"/>'),
   card: svg('<rect x="2" y="5" width="20" height="14" rx="2"/><path d="M6 15h6M6 11h3"/>'),
+  send: svg('<path d="m22 2-7 20-4-9-9-4Z"/><path d="M22 2 11 13"/>'),
   pin: svg('<path d="M20 10c0 4.99-5.54 10.19-7.4 11.8a1 1 0 0 1-1.2 0C9.54 20.19 4 14.99 4 10a8 8 0 0 1 16 0"/><circle cx="12" cy="10" r="3"/>'),
   qr: svg('<rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><path d="M14 14h3v3h-3zM20 14v.01M14 20h.01M17 20h4v-3"/>'),
 };
@@ -160,6 +161,8 @@ function page(s, url, qr, hasPhoto, vcf) {
     ${quick.map((q) => `<a${q.id ? ` id="${q.id}"` : ""} href="${esc(q.href)}"${q.href.startsWith("http") ? ' target="_blank" rel="noopener"' : ""}>${q.icon}<span>${q.label}</span></a>`).join("\n    ")}
   </nav>` : ""}
 
+  ${s.whatsapp || s.email ? `<button type="button" class="reply" id="reply">${ICON.send}<span>Dejame tu contacto</span></button>` : ""}
+
   ${s.bio ? `<p class="bio">${esc(s.bio)}</p>` : ""}
 
   <ul class="links">
@@ -170,12 +173,28 @@ function page(s, url, qr, hasPhoto, vcf) {
 
 <footer class="foot">${FOOT}</footer>
 
+${s.whatsapp || s.email ? `<dialog class="sheet" id="replydlg" aria-labelledby="replytitle">
+  <form method="dialog" id="replyform">
+    <h2 class="sheet-title" id="replytitle">Pasale tu contacto a ${esc(s.nombre)}</h2>
+    <p class="hint">Se abre ${s.whatsapp ? "WhatsApp" : "tu email"} con tus datos listos para mandar. No queda guardado en ningún servidor.</p>
+    <label class="field"><span>Tu nombre</span><input name="nombre" required autocomplete="name" enterkeyhint="next"></label>
+    <label class="field"><span>Empresa u organización <em>(opcional)</em></span><input name="empresa" autocomplete="organization" enterkeyhint="next"></label>
+    <label class="field"><span>Tu email <em>(opcional)</em></span><input name="email" type="email" autocomplete="email" enterkeyhint="send"></label>
+    <div class="sheet-row">
+      <button type="submit" value="cancel" formnovalidate class="ghost">Cancelar</button>
+      <button type="submit" value="ok" class="primary">Mandar por ${s.whatsapp ? "WhatsApp" : "email"}</button>
+    </div>
+  </form>
+</dialog>` : ""}
+
 <div class="toast" id="toast" role="status" aria-live="polite"></div>
 <script id="socio" type="application/json">${inlineJson({
     slug: s.slug, nombre: s.nombre, apellido: s.apellido, rol: s.rol, email: s.email,
     linkedin: links.find((l) => l.label === "LinkedIn")?.detail || "", ubicacion: s.ubicacion,
+    wa: s.whatsapp ? digits(s.whatsapp).replace("+", "") : "",
     url, title: `${full} · Lawal`, vcf,
   })}</script>
+<script src="../assets/vcard.js?v=${VERSION}" defer></script>
 <script src="../assets/terrain.js?v=${VERSION}" defer></script>
 <script src="../assets/card.js?v=${VERSION}" defer></script>
 </body>
@@ -225,12 +244,13 @@ function yoPage(s, url, qr) {
 </main>
 <nav class="yo-actions" aria-label="Opciones">
   <button type="button" id="evbtn">${ICON.pin}<span>Evento</span></button>
+  <button type="button" id="notebtn">${ICON.save}<span>Anotar</span></button>
   <button type="button" id="share">${ICON.share}<span>Compartir</span></button>
-  <a href="../">${ICON.card}<span>Mi tarjeta</span></a>
+  <a href="../">${ICON.card}<span>Tarjeta</span></a>
 </nav>
 <dialog class="sheet" id="evdlg" aria-labelledby="evtitle">
   <form method="dialog">
-    <label id="evtitle" for="evname">¿En qué evento estás?</label>
+    <label class="sheet-title" id="evtitle" for="evname">¿En qué evento estás?</label>
     <p class="hint">Quien te escanee va a ver «Nos conocimos en…» y le va a quedar anotado en tu contacto, con la fecha. Se borra solo en 3 días.</p>
     <input id="evname" name="evname" maxlength="40" placeholder="Ej: Nerdearla 2026" autocomplete="off" enterkeyhint="done">
     <div class="sheet-row">
@@ -239,9 +259,29 @@ function yoPage(s, url, qr) {
     </div>
   </form>
 </dialog>
+<dialog class="sheet" id="notedlg" aria-labelledby="notetitle">
+  <form method="dialog" id="noteform">
+    <h2 class="sheet-title" id="notetitle">Anotar contacto</h2>
+    <p class="hint" id="notehint">Va directo a tus contactos.</p>
+    <label class="field"><span>Nombre y apellido</span><input name="nombre" required autocomplete="off" enterkeyhint="next"></label>
+    <label class="field"><span>Teléfono</span><input name="tel" type="tel" inputmode="tel" autocomplete="off" enterkeyhint="next"></label>
+    <label class="field"><span>Email</span><input name="email" type="email" autocomplete="off" enterkeyhint="next"></label>
+    <label class="field"><span>Nota <em>(opcional)</em></span><input name="nota" placeholder="Ej: le interesa IA para su pyme" autocomplete="off" enterkeyhint="done"></label>
+    <div class="sheet-row">
+      <button type="submit" value="cancel" formnovalidate class="ghost">Cancelar</button>
+      <button type="submit" value="ok" class="primary">Guardar contacto</button>
+    </div>
+    <div class="lista" id="lista" hidden>
+      <span id="lista-n"></span>
+      <button type="button" id="lista-dl">Descargar todos</button>
+      <button type="button" id="lista-clear">Vaciar</button>
+    </div>
+  </form>
+</dialog>
 <div class="toast" id="toast" role="status" aria-live="polite"></div>
 <script id="socio" type="application/json">${JSON.stringify({ slug: s.slug, nombre: s.nombre, url, title: `${full} · Lawal` })}</script>
 <script src="../../assets/vendor/qrcode.js?v=${VERSION}" defer></script>
+<script src="../../assets/vcard.js?v=${VERSION}" defer></script>
 <script src="../../assets/terrain.js?v=${VERSION}" defer></script>
 <script src="../../assets/yo.js?v=${VERSION}" defer></script>
 </body>

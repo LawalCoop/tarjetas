@@ -298,31 +298,53 @@
   function saveContact(e) {
     if (!evento) return; // sin evento sirve el .vcf estático, que es lo más compatible
     e.preventDefault();
-    const fecha = new Date().toLocaleDateString("es-AR", { day: "numeric", month: "long", year: "numeric" });
-    const vesc = (x) => x.replace(/\\/g, "\\\\").replace(/([,;])/g, "\\$1");
+    const { esc: vesc, fecha } = LawalVCard;
     const vcf = socio.vcf
       .replace(/\r\n[ \t]/g, "") // despliega líneas largas
-      .replace(/^NOTE:(.*)$/m, (_, rest) => `NOTE:${vesc(`Nos conocimos en ${evento} el ${fecha}.`)}\\n${rest}`)
+      .replace(/^NOTE:(.*)$/m, (_, rest) => `NOTE:${vesc(`Nos conocimos en ${evento} el ${fecha()}.`)}\\n${rest}`)
       // "Jerónimo Clinaz - Ekoparty": va en el apellido porque iOS y Android
       // arman el nombre visible desde N, no desde FN.
       .replace(/^N:([^;\r\n]*);/m, (_, ap) => `N:${ap} - ${vesc(evento)};`)
       .replace(/^FN:(.*)$/m, (_, fn) => `FN:${fn} - ${vesc(evento)}`);
-    const url = URL.createObjectURL(new Blob([vcf], { type: "text/vcard;charset=utf-8" }));
-    const ios = /iP(hone|ad|od)/.test(navigator.userAgent) || (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1);
-    if (ios) {
-      // Safari abre la ficha de contacto directamente
-      location.href = url;
-    } else {
-      const a = document.createElement("a");
-      a.href = url;
-      a.download = `${socio.slug}.vcf`;
-      document.body.append(a);
-      a.click();
-      a.remove();
-    }
-    setTimeout(() => URL.revokeObjectURL(url), 10000);
+    LawalVCard.save(vcf, `${socio.slug}.vcf`);
   }
   saveBtn.addEventListener("click", saveContact);
+
+  // ---------- «Dejame tu contacto» ----------
+  // Arma un mensaje con los datos de quien escaneó y abre WhatsApp (o el email)
+  // hacia el socio. Los datos quedan en este celu para la próxima tarjeta.
+  const replyBtn = document.getElementById("reply");
+  if (replyBtn) {
+    const dlg = document.getElementById("replydlg");
+    const form = document.getElementById("replyform");
+    const KEY = "lawal-visitante";
+    replyBtn.addEventListener("click", () => {
+      try {
+        const v = JSON.parse(localStorage.getItem(KEY) || "{}");
+        for (const k of ["nombre", "empresa", "email"]) if (v[k]) form.elements[k].value = v[k];
+      } catch {}
+      dlg.showModal();
+    });
+    dlg.addEventListener("click", (e) => { if (e.target === dlg) dlg.close(); });
+    form.addEventListener("submit", (e) => {
+      if (e.submitter?.value !== "ok") return; // Cancelar cierra el diálogo solo
+      e.preventDefault();
+      if (!form.reportValidity()) return;
+      const clean = (k) => form.elements[k].value.replace(/[\u0000-\u001f]/g, " ").trim().slice(0, 80);
+      const v = { nombre: clean("nombre"), empresa: clean("empresa"), email: clean("email") };
+      try { localStorage.setItem(KEY, JSON.stringify(v)); } catch {}
+      const msg =
+        `Hola ${socio.nombre}! Soy ${v.nombre}${v.empresa ? ` (${v.empresa})` : ""}` +
+        `${evento ? `, nos conocimos en ${evento}` : ""}. Te paso mi contacto` +
+        `${v.email ? `: ${v.email}` : ""}.`;
+      const url = socio.wa
+        ? `https://wa.me/${socio.wa}?text=${encodeURIComponent(msg)}`
+        : `mailto:${socio.email}?subject=${encodeURIComponent(`Mi contacto${evento ? ` (${evento})` : ""}`)}&body=${encodeURIComponent(msg)}`;
+      dlg.close();
+      if (socio.wa) window.open(url, "_blank", "noopener") || (location.href = url);
+      else location.href = url;
+    });
+  }
 
   // ---------- terminal (5 toques en «Cooperativa de Software») ----------
   const tagline = document.getElementById("tagline");

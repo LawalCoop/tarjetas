@@ -288,6 +288,23 @@ button { font: inherit; color: inherit; background: none; border: 0; cursor: poi
 .quick a:active { background: rgb(255 255 255 / 0.1); }
 .quick svg { width: 22px; height: 22px; color: var(--ambar); }
 
+.reply {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  width: 100%;
+  margin-top: 10px;
+  min-height: 52px;
+  border-radius: 14px;
+  border: 1px solid rgb(255 190 105 / 0.45);
+  color: var(--ambar);
+  font-weight: 600;
+  font-size: 16px;
+}
+.reply svg { width: 20px; height: 20px; }
+.reply:active { background: rgb(255 190 105 / 0.08); }
+
 .bio {
   margin-top: 28px;
   color: var(--tiza);
@@ -392,14 +409,82 @@ button { font: inherit; color: inherit; background: none; border: 0; cursor: poi
     column-gap: clamp(20px, 4vw, 44px);
     align-items: start;
   }
-  .stage { grid-column: 1; grid-row: 1 / span 5; position: sticky; top: 12px; }
-  .save, .quick, .bio, .links { grid-column: 2; }
+  .stage { grid-column: 1; grid-row: 1 / span 6; position: sticky; top: 12px; }
+  .save, .quick, .reply, .bio, .links { grid-column: 2; }
   .save { margin-top: 0; }
   .bio, .links { margin-top: 18px; }
   .links .label { white-space: nowrap; }
   .links .detail { max-width: 18vw; }
   .foot { padding-block: 24px 28px; }
 }
+
+/* ---------- hojas (evento, anotar, dejame tu contacto) ---------- */
+.sheet {
+  margin: auto auto 0;
+  width: 100%;
+  max-width: 480px;
+  border: 0;
+  border-radius: 20px 20px 0 0;
+  padding: 22px 20px max(20px, env(safe-area-inset-bottom));
+  background: #18222b;
+  color: var(--tiza);
+  box-shadow: 0 -20px 60px rgb(0 0 0 / 0.5);
+}
+.sheet::backdrop { background: rgb(15 19 25 / 0.7); }
+@media (min-width: 640px) {
+  .sheet { margin: auto; border-radius: 20px; }
+}
+@media (prefers-reduced-motion: no-preference) {
+  .sheet[open] { animation: sheet-in 0.3s cubic-bezier(0.2, 0.9, 0.25, 1) both; }
+}
+@keyframes sheet-in { from { transform: translateY(24px); opacity: 0; } }
+.sheet-title { display: block; font-size: 20px; font-weight: 650; line-height: 1.25; }
+.sheet .hint { margin-top: 6px; font-size: 14px; line-height: 1.45; color: var(--niebla); }
+.sheet input {
+  width: 100%;
+  margin-top: 16px;
+  display: block;
+  padding: 14px 14px;
+  border-radius: 12px;
+  border: 1px solid rgb(255 255 255 / 0.18);
+  background: rgb(0 0 0 / 0.25);
+  color: #fff;
+  font: inherit;
+  font-size: 18px;
+}
+.sheet input:focus { outline: 2px solid var(--ambar); outline-offset: 1px; border-color: transparent; }
+.sheet-row { display: grid; grid-template-columns: 1fr 1.4fr; gap: 10px; margin-top: 14px; }
+.sheet-row button { min-height: 50px; border-radius: 12px; font-weight: 600; font-size: 16px; }
+.sheet .ghost { background: rgb(255 255 255 / 0.06); border: 1px solid var(--linea); }
+.sheet .primary { background: var(--ambar); color: var(--pizarra); }
+
+.field { display: block; margin-top: 12px; }
+.field span { display: block; font-size: 13px; color: var(--niebla); }
+.field em { font-style: normal; opacity: 0.75; }
+.sheet .field input { margin-top: 5px; padding: 12px; font-size: 17px; }
+.sheet form { max-height: calc(100dvh - 40px); overflow: auto; }
+
+.lista {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 6px 14px;
+  margin-top: 16px;
+  padding-top: 14px;
+  border-top: 1px solid var(--linea);
+  font-size: 14px;
+  color: var(--niebla);
+}
+.lista[hidden] { display: none; }
+.lista span { flex: 1 0 100%; }
+.lista button {
+  padding: 6px 0;
+  font-weight: 600;
+  color: var(--ambar);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+.lista #lista-clear { color: var(--niebla); }
 
 /* ---------- terminal (easter egg) ---------- */
 .term {
