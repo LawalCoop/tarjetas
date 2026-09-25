@@ -51,6 +51,10 @@ button { font: inherit; color: inherit; background: none; border: 0; cursor: poi
 }
 .lockup svg { display: block; height: 18px; width: auto; flex: none; }
 .tagline {
+  cursor: default;
+  user-select: none;
+  -webkit-user-select: none;
+  -webkit-tap-highlight-color: transparent;
   padding-left: 12px;
   border-left: 1px solid rgb(255 255 255 / 0.28);
   font-size: 15px;
@@ -59,6 +63,27 @@ button { font: inherit; color: inherit; background: none; border: 0; cursor: poi
   font-variation-settings: "wdth" 90;
   white-space: nowrap;
 }
+
+/* ---------- «Nos conocimos en…» ---------- */
+.met {
+  width: 100%;
+  max-width: 440px;
+  margin: 0 auto 14px;
+  padding-inline: max(16px, env(safe-area-inset-left)) max(16px, env(safe-area-inset-right));
+}
+.met[hidden] { display: none; }
+.met p {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 7px 14px 7px 10px;
+  border-radius: 999px;
+  border: 1px solid rgb(255 190 105 / 0.35);
+  background: rgb(255 190 105 / 0.08);
+  font-size: 15px;
+}
+.met svg { width: 18px; height: 18px; color: var(--ambar); flex: none; }
+.met strong { font-weight: 650; color: var(--ambar); }
 
 /* ---------- tarjeta ---------- */
 .tilt { will-change: transform; }
@@ -72,6 +97,10 @@ button { font: inherit; color: inherit; background: none; border: 0; cursor: poi
   text-align: left;
   cursor: pointer;
   -webkit-tap-highlight-color: transparent;
+  /* mantener apretado dispara el sismo, no el menú de copiar */
+  user-select: none;
+  -webkit-user-select: none;
+  -webkit-touch-callout: none;
 }
 /* El giro lo anima card.js; acá solo se elige qué cara se ve. */
 .card[aria-pressed="true"] .front,
@@ -323,6 +352,9 @@ button { font: inherit; color: inherit; background: none; border: 0; cursor: poi
   left: 50%;
   bottom: calc(24px + env(safe-area-inset-bottom));
   transform: translate(-50%, 20px);
+  width: max-content;
+  max-width: calc(100vw - 32px);
+  text-align: center;
   padding: 10px 16px;
   border-radius: 10px;
   background: var(--tiza);
@@ -368,3 +400,72 @@ button { font: inherit; color: inherit; background: none; border: 0; cursor: poi
   .links .detail { max-width: 18vw; }
   .foot { padding-block: 24px 28px; }
 }
+
+/* ---------- terminal (easter egg) ---------- */
+.term {
+  position: fixed;
+  inset: 0;
+  z-index: 50;
+  display: grid;
+  place-items: center;
+  padding: 16px;
+  background: rgb(15 19 25 / 0.82);
+  -webkit-backdrop-filter: blur(6px);
+  backdrop-filter: blur(6px);
+}
+.term-win {
+  width: 100%;
+  max-width: 560px;
+  border-radius: 12px;
+  overflow: hidden;
+  background: #0a0e13;
+  border: 1px solid rgb(70 141 129 / 0.45);
+  box-shadow: 0 30px 80px -20px rgb(0 0 0 / 0.8), 0 0 0 1px rgb(255 255 255 / 0.03) inset;
+}
+@media (prefers-reduced-motion: no-preference) {
+  .term-win { animation: boot 0.35s cubic-bezier(0.2, 0.9, 0.25, 1.1) both; }
+}
+@keyframes boot { from { opacity: 0; transform: scale(0.94) translateY(8px); } }
+.term-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 8px 8px 14px;
+  background: rgb(255 255 255 / 0.04);
+  border-bottom: 1px solid var(--linea);
+  font: 500 13px/1 ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+  color: var(--niebla);
+}
+.term-close {
+  padding: 8px 12px;
+  border-radius: 8px;
+  font-size: 14px;
+  color: var(--tiza);
+  background: rgb(255 255 255 / 0.06);
+}
+.term-body {
+  min-height: 300px;
+  max-height: 70dvh;
+  overflow: auto;
+  padding: 16px 14px 20px;
+  font: 400 13px/1.6 ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+  color: #d8dee4;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+.t-p { color: var(--lenga); }
+.t-s { color: var(--ambar); }
+.t-a { color: #d68ab3; }
+.t-k { color: #8fc7bb; }
+a.t-s { text-decoration: underline; text-underline-offset: 3px; }
+.t-cur {
+  display: inline-block;
+  width: 0.6em;
+  height: 1.1em;
+  vertical-align: text-bottom;
+  background: var(--ambar);
+}
+@media (prefers-reduced-motion: no-preference) {
+  .t-cur { animation: blink 1s steps(1) infinite; }
+}
+@keyframes blink { 50% { opacity: 0; } }

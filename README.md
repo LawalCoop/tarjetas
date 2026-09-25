@@ -31,6 +31,21 @@ Para tenerla a mano:
 
 Para imprimir el QR (stickers, credenciales, slides) usá `/tarjetas/<slug>/qr.svg`.
 
+### «Nos conocimos en…»
+
+Antes de un evento, en la vista `/yo/` tocá **Evento** y escribí el nombre (por ejemplo «Nerdearla 2026»). El QR pasa a incluirlo y quien te escanee:
+
+- ve «Nos conocimos en Nerdearla 2026» arriba de tu tarjeta,
+- recibe un WhatsApp ya armado con «Nos conocimos en Nerdearla 2026»,
+- al guardar tu contacto le queda en la nota: «Nos conocimos en Nerdearla 2026 el 25 de septiembre de 2026».
+
+El evento queda guardado en tu celu y se borra solo a los 3 días.
+
+### Easter eggs
+
+- **Sismo patagónico:** mantené apretada la tarjeta (o sacudí el celu) y las curvas de nivel tiemblan. En iPhone, sacudir funciona después de tocar la tarjeta una vez y aceptar el permiso de movimiento; mantener apretado anda siempre.
+- **Terminal:** tocá 5 veces seguidas «Cooperativa de Software» arriba de todo.
+
 ## Qué puede hacer quien escanea
 
 Guardar el contacto (vCard, con foto si hay), escribir por WhatsApp con un mensaje ya armado, llamar, mandar un email, ir a LinkedIn o GitHub, conocer Lawal y compartir la tarjeta.

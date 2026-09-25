@@ -30,13 +30,19 @@ const ICON = {
   share: svg('<path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"/><path d="m16 6-4-4-4 4M12 2v13"/>'),
   expand: svg('<path d="M8 3H5a2 2 0 0 0-2 2v3M21 8V5a2 2 0 0 0-2-2h-3M3 16v3a2 2 0 0 0 2 2h3M16 21h3a2 2 0 0 0 2-2v-3"/>'),
   card: svg('<rect x="2" y="5" width="20" height="14" rx="2"/><path d="M6 15h6M6 11h3"/>'),
+  pin: svg('<path d="M20 10c0 4.99-5.54 10.19-7.4 11.8a1 1 0 0 1-1.2 0C9.54 20.19 4 14.99 4 10a8 8 0 0 1 16 0"/><circle cx="12" cy="10" r="3"/>'),
   qr: svg('<rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><path d="M14 14h3v3h-3zM20 14v.01M14 20h.01M17 20h4v-3"/>'),
 };
 
 const LOGO = fs.readFileSync(path.join(ROOT, "assets/logo.svg"), "utf8").replace('fill="#FFFFFF"', 'fill="currentColor"');
 
-// Logo + bajada, como firma de la coope en las cabeceras.
-const LOCKUP = `<span class="lockup">${LOGO}<span class="tagline">Cooperativa de Software</span></span>`;
+// Logo + bajada, como firma de la coope en las cabeceras. Solo el logo es link:
+// la bajada queda libre para el easter egg de la terminal (5 toques).
+const lockup = (link = true) =>
+  `<span class="lockup">${link ? `<a class="brand" href="https://lawal.coop" aria-label="Lawal, ir al sitio">${LOGO}</a>` : LOGO}<span class="tagline" id="tagline">Cooperativa de Software</span></span>`;
+
+// JSON seguro para meter dentro de <script>.
+const inlineJson = (o) => JSON.stringify(o).replace(/</g, "\\u003c");
 
 const REPO = "https://github.com/LawalCoop/tarjetas";
 const FOOT = `
@@ -84,11 +90,11 @@ function vcard(s, url, photo) {
   return lines.map((l) => (l.length > 75 ? l.match(/.{1,74}/g).join("\r\n ") : l)).join("\r\n") + "\r\n";
 }
 
-function page(s, url, qr, hasPhoto) {
+function page(s, url, qr, hasPhoto, vcf) {
   const full = `${s.nombre} ${s.apellido}`;
   const desc = `${s.rol ? s.rol + " en " : ""}${ORG}. Guardá el contacto con un toque.`;
   const quick = [
-    s.whatsapp && { href: `https://wa.me/${digits(s.whatsapp).replace("+", "")}?text=${encodeURIComponent(`Hola ${s.nombre}! Nos conocimos recién.`)}`, icon: ICON.whatsapp, label: "WhatsApp" },
+    s.whatsapp && { href: `https://wa.me/${digits(s.whatsapp).replace("+", "")}?text=${encodeURIComponent(`Hola ${s.nombre}! Nos conocimos recién.`)}`, icon: ICON.whatsapp, label: "WhatsApp", id: "wa" },
     s.telefono && { href: `tel:${digits(s.telefono)}`, icon: ICON.phone, label: "Llamar" },
     s.email && { href: `mailto:${s.email}?subject=${encodeURIComponent("Hola desde tu tarjeta de Lawal")}`, icon: ICON.mail, label: "Email" },
   ].filter(Boolean);
@@ -122,9 +128,9 @@ function page(s, url, qr, hasPhoto) {
 <link rel="stylesheet" href="../assets/card.css?v=${VERSION}">
 </head>
 <body>
-<header class="top">
-  <a class="brand" href="https://lawal.coop" aria-label="Lawal, Cooperativa de Software. Ir al sitio">${LOCKUP}</a>
-</header>
+<header class="top">${lockup()}</header>
+
+<div class="met" id="met" hidden><p>${ICON.pin}<span>Nos conocimos en <strong></strong></span></p></div>
 
 <main>
   <div class="stage">
@@ -148,10 +154,10 @@ function page(s, url, qr, hasPhoto) {
     </div>
   </div>
 
-  <a class="save" href="${esc(s.slug)}.vcf">${ICON.save}<span>Guardar contacto</span></a>
+  <a class="save" id="save" href="${esc(s.slug)}.vcf">${ICON.save}<span>Guardar contacto</span></a>
 
   ${quick.length ? `<nav class="quick quick-${quick.length}" aria-label="Contacto directo">
-    ${quick.map((q) => `<a href="${esc(q.href)}"${q.href.startsWith("http") ? ' target="_blank" rel="noopener"' : ""}>${q.icon}<span>${q.label}</span></a>`).join("\n    ")}
+    ${quick.map((q) => `<a${q.id ? ` id="${q.id}"` : ""} href="${esc(q.href)}"${q.href.startsWith("http") ? ' target="_blank" rel="noopener"' : ""}>${q.icon}<span>${q.label}</span></a>`).join("\n    ")}
   </nav>` : ""}
 
   ${s.bio ? `<p class="bio">${esc(s.bio)}</p>` : ""}
@@ -165,7 +171,11 @@ function page(s, url, qr, hasPhoto) {
 <footer class="foot">${FOOT}</footer>
 
 <div class="toast" id="toast" role="status" aria-live="polite"></div>
-<script id="socio" type="application/json">${JSON.stringify({ slug: s.slug, nombre: s.nombre, url, title: `${full} · Lawal` })}</script>
+<script id="socio" type="application/json">${inlineJson({
+    slug: s.slug, nombre: s.nombre, apellido: s.apellido, rol: s.rol, email: s.email,
+    linkedin: links.find((l) => l.label === "LinkedIn")?.detail || "", ubicacion: s.ubicacion,
+    url, title: `${full} · Lawal`, vcf,
+  })}</script>
 <script src="../assets/terrain.js?v=${VERSION}" defer></script>
 <script src="../assets/card.js?v=${VERSION}" defer></script>
 </body>
@@ -200,12 +210,13 @@ function yoPage(s, url, qr) {
 <body class="yo">
 <canvas id="terrain" aria-hidden="true"></canvas>
 <header class="yo-top">
-  <span class="brand">${LOCKUP}</span>
+  ${lockup(false)}
   <button type="button" id="fullscreen" class="yo-icon" aria-label="Pantalla completa" hidden>${ICON.expand}</button>
 </header>
 <main class="yo-main">
   <h1 class="yo-name"><span>${esc(s.nombre)}</span><span>${esc(s.apellido)}</span></h1>
   ${s.rol ? `<p class="yo-role">${rolHtml(s.rol)}</p>` : ""}
+  <p class="yo-event" id="yoev" hidden>${ICON.pin}<span></span></p>
   <div class="yo-target">
     <span class="corner tl"></span><span class="corner tr"></span><span class="corner bl"></span><span class="corner br"></span>
     <div class="plate" id="plate">${qr}</div>
@@ -213,11 +224,24 @@ function yoPage(s, url, qr) {
   <p class="yo-cta">Escaneá para guardar mi contacto</p>
 </main>
 <nav class="yo-actions" aria-label="Opciones">
-  <button type="button" id="share">${ICON.share}<span>Compartir link</span></button>
-  <a href="../">${ICON.card}<span>Ver mi tarjeta</span></a>
+  <button type="button" id="evbtn">${ICON.pin}<span>Evento</span></button>
+  <button type="button" id="share">${ICON.share}<span>Compartir</span></button>
+  <a href="../">${ICON.card}<span>Mi tarjeta</span></a>
 </nav>
+<dialog class="sheet" id="evdlg" aria-labelledby="evtitle">
+  <form method="dialog">
+    <label id="evtitle" for="evname">¿En qué evento estás?</label>
+    <p class="hint">Quien te escanee va a ver «Nos conocimos en…» y le va a quedar anotado en tu contacto, con la fecha. Se borra solo en 3 días.</p>
+    <input id="evname" name="evname" maxlength="40" placeholder="Ej: Nerdearla 2026" autocomplete="off" enterkeyhint="done">
+    <div class="sheet-row">
+      <button type="submit" value="clear" class="ghost">Quitar</button>
+      <button type="submit" value="ok" class="primary">Listo</button>
+    </div>
+  </form>
+</dialog>
 <div class="toast" id="toast" role="status" aria-live="polite"></div>
 <script id="socio" type="application/json">${JSON.stringify({ slug: s.slug, nombre: s.nombre, url, title: `${full} · Lawal` })}</script>
+<script src="../../assets/vendor/qrcode.js?v=${VERSION}" defer></script>
 <script src="../../assets/terrain.js?v=${VERSION}" defer></script>
 <script src="../../assets/yo.js?v=${VERSION}" defer></script>
 </body>
@@ -240,7 +264,7 @@ function indexPage(socios) {
 <link rel="stylesheet" href="assets/card.css?v=${VERSION}">
 </head>
 <body class="index">
-<header class="top"><a class="brand" href="https://lawal.coop" aria-label="Lawal, Cooperativa de Software. Ir al sitio">${LOCKUP}</a></header>
+<header class="top">${lockup()}</header>
 <main>
   <h1>Las personas de Lawal</h1>
   <ul class="links">
@@ -281,8 +305,9 @@ for (const s of socios) {
   }
 
   const qr = qrSvg(url);
-  fs.writeFileSync(path.join(dir, "index.html"), page(s, url, qr, ext));
-  fs.writeFileSync(path.join(dir, `${s.slug}.vcf`), vcard(s, url, photo));
+  const vcf = vcard(s, url, photo);
+  fs.writeFileSync(path.join(dir, "index.html"), page(s, url, qr, ext, vcf));
+  fs.writeFileSync(path.join(dir, `${s.slug}.vcf`), vcf);
   fs.writeFileSync(path.join(dir, "qr.svg"), qr);
   fs.mkdirSync(path.join(dir, "yo"), { recursive: true });
   fs.writeFileSync(path.join(dir, "yo", "index.html"), yoPage(s, url, qr));

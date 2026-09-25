@@ -150,11 +150,72 @@
   };
   document.getElementById("share").addEventListener("click", async () => {
     if (navigator.share) {
-      try { await navigator.share({ title: socio.title, text: `Tarjeta de ${socio.nombre} (Lawal)`, url: socio.url }); } catch {}
+      try { await navigator.share({ title: socio.title, text: `Tarjeta de ${socio.nombre} (Lawal)`, url: shareUrl }); } catch {}
       return;
     }
-    try { await navigator.clipboard.writeText(socio.url); say("Link copiado"); } catch { say(socio.url); }
+    try { await navigator.clipboard.writeText(shareUrl); say("Link copiado"); } catch { say(shareUrl); }
   });
+
+  // ---------- evento: «Nos conocimos en…» ----------
+  // Se guarda en este celu y vence a los 3 días, para no arrastrar el evento anterior.
+  const KEY = `lawal-evento-${socio.slug}`;
+  const TTL = 3 * 24 * 3600 * 1000;
+  const chip = document.getElementById("yoev");
+  const dlg = document.getElementById("evdlg");
+  const input = document.getElementById("evname");
+  let shareUrl = socio.url;
+
+  function readEvento() {
+    try {
+      const v = JSON.parse(localStorage.getItem(KEY) || "null");
+      if (v && Date.now() - v.t < TTL) return v.nombre;
+      localStorage.removeItem(KEY);
+    } catch {}
+    return "";
+  }
+  function writeEvento(nombre) {
+    try {
+      if (nombre) localStorage.setItem(KEY, JSON.stringify({ nombre, t: Date.now() }));
+      else localStorage.removeItem(KEY);
+    } catch {}
+  }
+
+  function qrSvg(text) {
+    const qr = qrcode(0, "M");
+    qr.addData(text, "Byte");
+    qr.make();
+    const n = qr.getModuleCount();
+    let d = "";
+    for (let r = 0; r < n; r++) for (let c = 0; c < n; c++) if (qr.isDark(r, c)) d += `M${c} ${r}h1v1h-1z`;
+    return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="-2 -2 ${n + 4} ${n + 4}" shape-rendering="crispEdges" role="img" aria-label="Código QR de esta tarjeta"><rect x="-2" y="-2" width="${n + 4}" height="${n + 4}" fill="#fff"/><path d="${d}" fill="#202A33"/></svg>`;
+  }
+
+  function applyEvento(nombre) {
+    shareUrl = nombre ? `${socio.url}?e=${encodeURIComponent(nombre)}` : socio.url;
+    if (window.qrcode) plate.innerHTML = qrSvg(shareUrl);
+    chip.querySelector("span").textContent = nombre ? `Hoy en ${nombre}` : "";
+    chip.hidden = !nombre;
+    resize();
+  }
+
+  applyEvento(readEvento());
+
+  document.getElementById("evbtn").addEventListener("click", () => {
+    input.value = readEvento();
+    dlg.showModal();
+    setTimeout(() => input.focus(), 50);
+  });
+  dlg.addEventListener("close", () => {
+    if (dlg.returnValue === "clear") { writeEvento(""); applyEvento(""); say("Evento quitado"); }
+    else if (dlg.returnValue === "ok") {
+      const nombre = input.value.replace(/[\u0000-\u001f<>]/g, "").trim().slice(0, 40);
+      writeEvento(nombre);
+      applyEvento(nombre);
+      if (nombre) say(`Listo: el QR ya dice «${nombre}»`);
+    }
+    dlg.returnValue = "";
+  });
+  dlg.addEventListener("click", (e) => { if (e.target === dlg) dlg.close(); });
 
   if ("serviceWorker" in navigator && location.protocol === "https:") {
     navigator.serviceWorker.register("../../sw.js").catch(() => {});
