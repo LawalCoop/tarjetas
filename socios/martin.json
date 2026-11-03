@@ -1,0 +1,15 @@
+{
+  "slug": "martin",
+  "nombre": "Martín",
+  "apellido": "Silva",
+  "rol": "Dev Sr / Vinculación / Facilitador Entrama",
+  "bio": "Desarrollador de software hace más de 20 años y cooperativista. Trabajo con Elixir en automatización con OCR y LLMs, y armo alianzas estratégicas para Lawal. Antes fui socio de Fiqus durante ocho años.",
+  "email": "martin.silva@lawal.com.ar",
+  "telefono": "+54 9 2944 89-9408",
+  "whatsapp": "+54 9 2944 89-9408",
+  "linkedin": "https://www.linkedin.com/in/mart%C3%ADn-silva-18a1b6249/",
+  "github": "",
+  "web": "",
+  "ubicacion": "Villa La Angostura, Neuquén, Argentina",
+  "foto": "fotos/martin.jpg"
+}

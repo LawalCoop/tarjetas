@@ -220,7 +220,7 @@ body.yo {
      resto del texto alineado con el nombre. */
   .yo-main:has(.yo-avatar) {
     --name: clamp(38px, min(7vw, 14dvh), 96px);
-    grid-template-columns: auto auto auto;
+    grid-template-columns: auto max-content auto;
     grid-template-areas: "avatar name target" ". role target" ". event target" ". cta target";
     column-gap: 0;
   }
