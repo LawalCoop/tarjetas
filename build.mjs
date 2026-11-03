@@ -15,6 +15,7 @@ const VERSION = Date.now().toString(36);
 const esc = (s = "") =>
   String(s).replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[c]);
 const digits = (s = "") => s.replace(/[^\d+]/g, "");
+const decode = (s = "") => { try { return decodeURIComponent(s); } catch { return s; } };
 
 // Íconos de trazo (24x24), heredan currentColor.
 const svg = (d) =>
@@ -100,7 +101,7 @@ function page(s, url, qr, hasPhoto, vcf) {
     s.email && { href: `mailto:${s.email}?subject=${encodeURIComponent("Hola desde tu tarjeta de Lawal")}`, icon: ICON.mail, label: "Email" },
   ].filter(Boolean);
   const links = [
-    s.linkedin && { href: s.linkedin, icon: ICON.linkedin, label: "LinkedIn", detail: s.linkedin.replace(/^https?:\/\/(www\.)?linkedin\.com\/in\//, "").replace(/\/$/, "") },
+    s.linkedin && { href: s.linkedin, icon: ICON.linkedin, label: "LinkedIn", detail: decode(s.linkedin.replace(/^https?:\/\/(www\.)?linkedin\.com\/in\//, "").replace(/\/$/, "")) },
     s.github && { href: s.github, icon: ICON.github, label: "GitHub", detail: s.github.replace(/^https?:\/\/(www\.)?github\.com\//, "").replace(/\/$/, "") },
     s.web && { href: s.web, icon: ICON.globe, label: "Sitio personal", detail: s.web.replace(/^https?:\/\//, "").replace(/\/$/, "") },
     { href: "https://lawal.coop", icon: ICON.globe, label: "Conocé Lawal", detail: "lawal.coop" },
