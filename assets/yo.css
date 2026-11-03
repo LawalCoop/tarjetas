@@ -201,14 +201,13 @@ body.yo {
   .yo-main {
     display: grid;
     grid-template-columns: auto auto;
-    grid-template-areas: "avatar target" "name target" "role target" "event target" "cta target";
+    grid-template-areas: "name target" "role target" "event target" "cta target";
     column-gap: clamp(40px, 8vw, 120px);
     align-content: center;
     justify-content: center;
     text-align: left;
     align-items: start;
   }
-  .yo-avatar { grid-area: avatar; align-self: end; width: clamp(52px, 13dvh, 96px); height: clamp(52px, 13dvh, 96px); }
   .yo-name { grid-area: name; align-self: end; font-size: clamp(44px, 7vw, 96px); }
   .yo-role { grid-area: role; max-width: 32ch; }
   .yo-name { font-size: clamp(38px, min(7vw, 14dvh), 96px); }
@@ -216,6 +215,24 @@ body.yo {
   .yo-event { grid-area: event; justify-self: start; }
   .yo-cta { grid-area: cta; margin-top: clamp(14px, 5dvh, 32px); }
   .yo-target { grid-area: target; --size: min(62dvh, 40vw, 460px); margin: 0; }
+
+  /* Con foto: la foto al costado del nombre, del alto de sus dos líneas. */
+  .yo-main:has(.yo-avatar) {
+    --name: clamp(38px, min(7vw, 14dvh), 96px);
+    grid-template-columns: auto auto auto;
+    grid-template-areas: "avatar name target" "role role target" "event event target" "cta cta target";
+    column-gap: 0;
+  }
+  .yo-main:has(.yo-avatar) .yo-name { font-size: var(--name); }
+  .yo-main:has(.yo-avatar) .yo-role { margin-top: clamp(12px, 2.5dvh, 22px); }
+  .yo-avatar {
+    grid-area: avatar;
+    align-self: end;
+    width: calc(var(--name) * 1.8);
+    height: calc(var(--name) * 1.8);
+    margin: 0 clamp(14px, 0.3 * var(--name), 26px) 0 0;
+  }
+  .yo-main:has(.yo-avatar) .yo-target { margin-left: clamp(40px, 8vw, 120px); }
 
   /* Las acciones suben a la barra: toda la altura queda para el QR. */
   .yo-actions {
