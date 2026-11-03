@@ -216,11 +216,12 @@ body.yo {
   .yo-cta { grid-area: cta; margin-top: clamp(14px, 5dvh, 32px); }
   .yo-target { grid-area: target; --size: min(62dvh, 40vw, 460px); margin: 0; }
 
-  /* Con foto: la foto al costado del nombre, del alto de sus dos líneas. */
+  /* Con foto: la foto al costado del nombre, del alto de sus dos líneas, y el
+     resto del texto alineado con el nombre. */
   .yo-main:has(.yo-avatar) {
     --name: clamp(38px, min(7vw, 14dvh), 96px);
     grid-template-columns: auto auto auto;
-    grid-template-areas: "avatar name target" "role role target" "event event target" "cta cta target";
+    grid-template-areas: "avatar name target" ". role target" ". event target" ". cta target";
     column-gap: 0;
   }
   .yo-main:has(.yo-avatar) .yo-name { font-size: var(--name); }
