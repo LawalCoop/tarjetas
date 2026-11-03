@@ -55,6 +55,16 @@ body.yo {
   min-height: 0;
 }
 
+.yo-avatar {
+  width: clamp(52px, 9dvh, 88px);
+  height: clamp(52px, 9dvh, 88px);
+  margin-bottom: clamp(10px, 2dvh, 18px);
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid rgb(255 255 255 / 0.85);
+  box-shadow: 0 8px 28px -6px rgb(0 0 0 / 0.7);
+}
+
 .yo-name {
   display: flex;
   flex-direction: column;
@@ -98,6 +108,11 @@ body.yo {
   width: var(--size);
   height: var(--size);
   margin-top: clamp(20px, 4dvh, 40px);
+}
+
+/* Con foto, el QR cede un poco de alto para que entre todo en pantallas bajas. */
+@media not ((orientation: landscape) and (min-width: 640px)) {
+  .yo-main:has(.yo-avatar) .yo-target { --size: min(68vw, 33dvh, 340px); }
 }
 
 .plate {
@@ -159,6 +174,7 @@ body.yo {
 @media (prefers-reduced-motion: no-preference) {
   .yo-name span { animation: rise 0.8s cubic-bezier(0.2, 0.8, 0.2, 1) both; }
   .yo-name span:last-child { animation-delay: 0.08s; }
+  .yo-avatar { animation: fade 0.6s both; }
   .yo-role { animation: fade 0.6s 0.3s both; }
   .plate { animation: land 0.9s 0.15s cubic-bezier(0.2, 0.9, 0.25, 1.15) both; }
   .corner { animation: seek 2.4s 1s ease-in-out infinite; }
@@ -185,13 +201,14 @@ body.yo {
   .yo-main {
     display: grid;
     grid-template-columns: auto auto;
-    grid-template-areas: "name target" "role target" "event target" "cta target";
+    grid-template-areas: "avatar target" "name target" "role target" "event target" "cta target";
     column-gap: clamp(40px, 8vw, 120px);
     align-content: center;
     justify-content: center;
     text-align: left;
     align-items: start;
   }
+  .yo-avatar { grid-area: avatar; align-self: end; width: clamp(52px, 13dvh, 96px); height: clamp(52px, 13dvh, 96px); }
   .yo-name { grid-area: name; align-self: end; font-size: clamp(44px, 7vw, 96px); }
   .yo-role { grid-area: role; max-width: 32ch; }
   .yo-name { font-size: clamp(38px, min(7vw, 14dvh), 96px); }

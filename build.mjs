@@ -204,7 +204,7 @@ ${s.whatsapp || s.email ? `<dialog class="sheet" id="replydlg" aria-labelledby="
 }
 
 // Vista para presentar en un evento: QR a pantalla completa.
-function yoPage(s, url, qr) {
+function yoPage(s, url, qr, hasPhoto) {
   const full = `${s.nombre} ${s.apellido}`;
   return `<!doctype html>
 <html lang="es">
@@ -234,6 +234,7 @@ function yoPage(s, url, qr) {
   <button type="button" id="fullscreen" class="yo-icon" aria-label="Pantalla completa" hidden>${ICON.expand}</button>
 </header>
 <main class="yo-main">
+  ${hasPhoto ? `<img class="yo-avatar" src="../foto${hasPhoto}" alt="" width="88" height="88">` : ""}
   <h1 class="yo-name"><span>${esc(s.nombre)}</span><span>${esc(s.apellido)}</span></h1>
   ${s.rol ? `<p class="yo-role">${rolHtml(s.rol)}</p>` : ""}
   <p class="yo-event" id="yoev" hidden>${ICON.pin}<span></span></p>
@@ -351,7 +352,7 @@ for (const s of socios) {
   fs.writeFileSync(path.join(dir, `${s.slug}.vcf`), vcf);
   fs.writeFileSync(path.join(dir, "qr.svg"), qr);
   fs.mkdirSync(path.join(dir, "yo"), { recursive: true });
-  fs.writeFileSync(path.join(dir, "yo", "index.html"), yoPage(s, url, qr));
+  fs.writeFileSync(path.join(dir, "yo", "index.html"), yoPage(s, url, qr, ext));
   fs.writeFileSync(
     path.join(dir, "yo", "manifest.webmanifest"),
     JSON.stringify({
